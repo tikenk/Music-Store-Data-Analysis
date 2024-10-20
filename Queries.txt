@@ -1,0 +1,64 @@
+#Question Set 1 - Easy
+#Q1: Who is the senior most employee based on job title?
+
+SELECT * FROM `decoded-flag-406510.music_database.employee`
+ORDER BY levels desc
+LIMIT 1
+
+#Ans: Mohan Madan
+
+#Q2. Which countries have the most invoices?
+
+SELECT COUNT(*) as c, billing_country
+FROM `decoded-flag-406510.music_database.invoice`
+GROUP BY billing_country
+ORDER BY c desc
+
+#Ans: USA
+
+#Q3. What are the top 3 values of total invoice
+
+SELECT total FROM `decoded-flag-406510.music_database.invoice`
+ORDER BY  total desc
+LIMIT 3
+
+#Answer: 23.759, 19.8 and 19.8.
+
+#Q4. Which city has the best customers? We would like to throw a promotional Music Festival in the city we made the most money. Write a query that returns one city that has the highest sum of invoice totals. Return both the city name & sum of all invoice totals
+
+SELECT SUM(total) as invoice_total, billing_city 
+FROM `decoded-flag-406510.music_database.invoice`
+GROUP BY billing_city
+ORDER BY invoice_total desc
+
+#Ans: Prague
+
+#Q5. Who is the best customer? The customer who has spent the most money will be declared the best customer. Write a query that returns the person who has spent the most money.
+
+SELECT c.customer_id, c.first_name, c.last_name, SUM(total) as invoice_total
+FROM `decoded-flag-406510.music_database.customer` as c
+LEFT JOIN `decoded-flag-406510.music_database.invoice` as i
+ON c.customer_id = i.customer_id
+GROUP BY customer_id, first_name, last_name
+ORDER BY invoice_total desc
+LIMIT 1
+
+#Ans: František Wichterlová
+
+#Q6: Write query to return the email, first name, last name, & Genre of all Rock Music listeners. Return your list ordered alphabetically by email starting with A
+
+SELECT DISTINCT c.email, c.first_name, c.last_name
+FROM `decoded-flag-406510.music_database.customer` as c
+LEFT JOIN `decoded-flag-406510.music_database.invoice` as i
+ON c.customer_id = i.customer_id
+LEFT JOIN `decoded-flag-406510.music_database.invoice_line` as il
+ON i.invoice_id = il.invoice_id
+WHERE track_id IN(
+  SELECT t.track_id
+  FROM `decoded-flag-406510.music_database.track` as t
+  LEFT JOIN `decoded-flag-406510.music_database.genre` as g
+  ON t.genre_id = g.genre_id
+  WHERE g.name LIKE 'Rock'
+)
+ORDER BY email;
+
